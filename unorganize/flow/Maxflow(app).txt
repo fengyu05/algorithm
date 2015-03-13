@@ -1,0 +1,142 @@
+Base:Application
+1. 奶牛的新年晚会--网络最大流
+problem:
+ n只牛(Ci),分别可带ci盘食物, 每类食物只带一盘
+ m种食物(Fi),每种不超过fi盘
+ 求每只牛所带食物的一种分配,使食物总盘数最大
+keypoint:
+流量平衡条件:除S,T外每点u: (i-u-j)
+   sum(f(i,u):i-u)+sum(f(u,j):u-j)=0
+ 每只牛带来盘数最后流到每种食物盘数,数量相等
+solution:
+         S
+      /  |   \   (cap=ci)
+    C1  C2 ... Cn
+     | \ | ...   (cap=1)
+	F1  F2 ... Fm
+	 \   |   /   (cap=fi)
+	     T
+	maxflow(S,T)
+
+2.航天计划问题--最小切割最大流定理
+problem:
+ n种仪器(Xi),使用费用为Ii
+ m种试验(Yi),收益为Ei
+ 每种试验需求若干仪器
+ 求试验集合(A),使净收益最大
+keypoint:
+  最大收益=总收益-最小切割{S,T}
+1.设T集包含A,则试验Y所使用仪器也在T集中
+  ({S,T}cut 不能包括无限容量的边)
+2.对于任何A中试验i,所用仪器费用Ik在切割中
+  对于任何A中试验i,收益Ei不在切割中
+  对于任何不在A中试验j,收益Ej在切割中
+  设所有试验设总收益为E
+则最小切割为 mincut=sum(Ej)+sum(Ik):
+                   =E-sum(Ei)+sum(Ik)
+			       =E-(sum(Ei)-sum(Ik))
+   则最大收益为 sum(Ei)-Sum(Ik)
+               =E-mincut 
+solution:
+         S
+      /  |   \   (cap=Ii)
+    X1  X2 ... Xn
+     | \ | ...   (cap=INF)
+	Y1  Y2 ... Ym
+	 \   |   /   (cap=Ei)
+	     T
+	maxflow(S,T)=mincut{S,T}
+	maxval=E-mincut
+
+(**)最小切割基本模型
+有n个物体{a.},分配到2个集合A,B中,分别需要不同费用
+若ai,aj在不同的集合,需额外费用w,求最近费用
+等价于对{A,B,a..}求最小切割
+
+3.可行流 feasible flow
+problem:
+多源多汇  顶点流量约束
+sum( Xij:j={ (i-j)<<A} )+sum( Xji:j={(j-i)<<A} )=b(i)
+ 0<=Xij<=Uij  (i-j: arc i->j ,  <<: belong to)
+
+solution:
+1)加上源点S 和汇点T
+2)for ecah node X
+  if b(X)>0, add arc S-X set cap=b[X]
+  if b(X)<0, add arc X-T set cap=-b[X]
+3)求最大流
+4)if all source and sink arc saturates then feasible
+ ecah S-X if  b[X]==f[S][X]
+      X-T if -b[x]==f[X][T]
+
+sample:
+问题:n个幼稚园小朋友一起吃饭,各有ai人.有m张台可用,每张台容纳ci人
+	要求每张台的小朋友都来自不同幼稚园,求可行方案.
+建图:加上S,T , S->ai:ai , ai->ci:1 , ci->T:ci
+	求最大流,有可行方案 iff Maxflow=Sigma(ci)
+
+4.混合图欧拉回路
+关键:给无向边定向,求是否存在一个定向,使每个节点入度等于出度(有向欧拉回路存在)
+
+
+//------------------------------------------------------------------//
+**.选代表问题 Problem of Representative
+problem:
+1)r个公民(R), q个俱乐部(C), p个党派(P)
+2)  C -- R -- P
+      1    1    1个 R对应1个C和1个P
+3)每个C派出1个代表,要求每个党派的代表数为U(Pi)
+solution:
+1)add source S and sink T
+2)for ecah C add arc S-C set cap[S][C]=1
+3) for ecah R if R is belong to C set cap[C][R]=1
+4) for ecah R if R is belong to P set cap[R][P]=1
+5)for ecah P add arc P-T set cap[P][T]=U(Pi)
+6)~maxflow
+
+**.矩阵取整 matrix rounding
+problem:
+1)given a p x q matrix of real numners D
+2)round up or down ecah element
+3)consistent rounding iff
+  the sum of the rounded elements int each row(colunm)
+  equals the rounded row(column) sum 
+4)find a consistent rounding schedule
+solution:
+1)add source s and sinK t
+2)for ecah row i(column j) add arc s-i(j-t)
+ set upper bound and lower bound
+  to up and down rounded of row(column) sum
+3)for ecah element D[i,j] add arc i-j
+ set upper bound and lower bound
+  to up and down rounded of D[i,j]
+4)~feasible flow
+
+**.并行处理计划 Scheduling on Uniform Parallel Machines
+
+**.双处理器分布式计算
+    Distributed Computing on a Two-Processor Computer
+problem:
+1)双处理器a,b. 任务i在a,b上运行的时间为ai,bi
+2)若任务i,j在不同处理器上运行,需communitcation cost cij
+3)求需时最少的任务分配
+solution:
+1)for each i set arc s-i:bi ,arc i-t:ai 
+2)for ecah i j set arc i-j:cij
+3)~minimun s-t cut( {s} U A1,{t} U A2 )
+ the total cost = sum(ai:i<<A1)+sum(bi:i<<A2)+sum(cij:i-j<<A1xA2) 
+
+**.Tanker Scheduling Problem
+
+**.Panic Room(POJ3084)
+问题:给定n[0..n-1]个房间,由单向锁的门相连.
+若存在门i->j(多能多重),则i向j可自由通过不管是否锁上,j向i只有在没锁上的时候才能通过
+已知一些房间里可能有入侵者,问保持给定m房间安全需要锁上多少门
+
+建图:初始化图设所有边为0
+加上点s,如果房间i有入侵者,加入边s->i:INF
+对任意房间如果i->j,怎加入i->j:INF,和 j->i:+1
+求0到m的最小切割
+
+关键点:注意有向边,理解关上门时边权+1的意义
+   

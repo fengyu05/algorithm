@@ -1,0 +1,63 @@
+--------- Transformations ---------------
+(1) 无向网
+将其表示为两方向权值相等的边
+(2) 求最长路
+将边取为原边的负值，用BellmanFord求最短路
+(3) 求网中路径最短的两点的路径长度
+附加一点s,并加入从s到各点的边，取权值为0，再求s的单源最短路。
+其中最短的路径s-x的长度即为网中最短路径
+
+
+
+
+
+
+
+
+
+--------- Applications -------------------
+(1) 嵌套俄罗斯娃娃
+problem
+a)求一套俄罗斯娃娃的最大嵌套树
+b)所有尺度均较小可套入
+solution
+a)建网:x可嵌入y 则x-y:1
+b)求网中路径最长的两点的路径长度
+c) Transformations (2)(3)
+d) 路径长度+1
+extension
+a)嵌套矩形或箱子，可旋转:将个尺度排序再比较
+
+(2) 分配生产线检查,Allocating Inspection Effort on Production Line
+problem
+a)最少化生产线的费用(加工费+检查费)
+b)单位产品在i阶段加工费为Pi,废品率为 ai
+c)单位产品在i阶段阶检查后，在j阶段检查的费用Gij
+d)每阶段可决定是否实行检查，查出废品将抛弃
+e)共需加工数量B的产品，最后一阶段必须检查
+solution
+a)建网:加入0点(0阶段:未加工)，从i点引入到i+1~n的边
+b)边i-j表示从在产品i阶段阶检查后，在j阶段检查
+c)边i-j边权:Cij=B(i)(Gij+Sum(k=i+1:j,Pk), B(i)=B*Mul(k=1:i,(1-ai))
+d)求0-n的最短路径长度
+
+(3) 函数线性分段近似表示,Approximating Piecewise Linear Funcions
+problem
+a)最少化分段的消耗(存储点所需空间+错误量)
+solution
+a)建网:从i点引入到i+1~n的边
+b)边i-j表示用i,j两点表示i~j间的点
+c)边i-j边权:Cij=a+b*[Sum(k=i:j,deta(xk)^2)]
+   a:存储空间,b系数,deta(xk):xk点的绝对误差
+d)求1-n的最短路径长度
+
+(4) 差分约束系统,System of Difference Constraints
+problem
+a) 求一组不等式x(jk)-x(ik)<=b(k),k=1:m的一组解
+b) n=max{jk[1:m],ik[1:m]},jk=ik=per[1:n]
+solution
+a)建网:对每个不等式引入边 ik-jk:b(k)
+b)附加0点,引入到每点的边，边权为0
+c)求0的单源最短路径，dist[1:n]为解组合
+
+(5)  
