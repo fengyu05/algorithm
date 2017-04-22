@@ -19,6 +19,19 @@ class SparseVector(object):
         return result
 
 class SparseMatrix(object):
+    '''
+    Create: Ex: SparseMatrix([
+        ((x, y), v),
+        ((x2, y2), v2),
+        ...
+        ])
+
+        =>
+        kv_map:
+            (x, y) : v,
+            (x2, y2): v2,
+            ...
+    '''
     def __init__(self, kv_list):
         self.kv_map = dict(kv_list)
 
